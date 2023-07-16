@@ -1,0 +1,85 @@
+---
+// imports
+import Layout from "../../layouts/Layout.astro";
+// gsap
+
+// datas
+const response = await fetch(
+  "https://eu-central-1-shared-euc1-02.cdn.hygraph.com/content/clk3pjccw0ng601ur9b1x1xzr/master",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      query: `
+        {
+            projects {
+                title
+                slug
+                mainImage {
+                    url
+                }
+                otherImages {
+                    url
+                }
+            }
+        }
+      `,
+    }),
+  }
+);
+const projects = await response.json();
+---
+
+<Layout title="Services Page">
+  <main>
+    <h1 class="pageTitle">projects</h1>
+
+    <ul class="projectContainer">
+      {
+        projects.data.projects.map((project) => (
+          <li class="projectItem">
+            <a href={`/projects/${project.slug}`}>
+              <div class="imageWrapper">
+                <img
+                  class="projectImage"
+                  src={project.mainImage.url}
+                  alt={project.title}
+                />
+              </div>
+              <h2 class="projectTitle">{project.title}</h2>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</Layout>
+
+<style>
+  .imageWrapper {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  import { gsap } from "gsap";
+
+  gsap.fromTo(
+    ".projectImage",
+    {
+      opacity: 0,
+      scale: 0.7,
+      ease: "power4",
+      duration: 1.5,
+    },
+    {
+      scale: 1,
+      duration: 1.5,
+      ease: "power4",
+      opacity: 1,
+    }
+  );
+</script>
